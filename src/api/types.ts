@@ -146,3 +146,203 @@ export interface FinalizeAuctionResponse {
   reserve_met: boolean;
   winner?: WinnerInfo | null;
 }
+
+// My Posted Auctions Types
+export interface MyPostedAuction {
+  id: number;
+  title: string;
+  subtitle: string;
+  slug: string;
+  image_url: {
+    mime: string;
+    url: string;
+  } | null;
+  year: number;
+  mileage_km: number;
+  fuel: string;
+  transmission: string;
+  location: string;
+  starting_price: number;
+  current_price: number;
+  currency: string;
+  auction_start: number;
+  auction_end: number;
+  is_active: boolean;
+  is_sold: boolean;
+  total_bids: number;
+  total_views: number;
+  total_watchers: number;
+  created_at: number;
+}
+
+export interface MyPostedAuctionsResponse extends PaginatedResponse {
+  auctions: MyPostedAuction[];
+}
+
+export interface DeleteAuctionResponse {
+  success: boolean;
+  message: string;
+  auction_id: number;
+}
+
+// Create/Edit Auction Types
+export interface CreateAuctionPayload {
+  title: string;
+  subtitle?: string;
+  year: number;
+  make: string;
+  model: string;
+  mileage_km: number;
+  fuel: string;
+  transmission: string;
+  location: string;
+  starting_price: number;
+  currency: string;
+  auction_end: string; // ISO date string
+  image_url: string;
+  vin: string;
+  description?: string;
+  engine?: string;
+  power_hp?: number;
+  color?: string;
+  previous_owners?: number;
+  condition_report?: string;
+  features?: string[];
+}
+
+export interface UpdateAuctionPayload extends Partial<CreateAuctionPayload> {
+  auction_id: number;
+}
+
+export interface AuctionForEdit {
+  id: number;
+  title: string;
+  subtitle: string;
+  year: number;
+  make: string;
+  model: string;
+  mileage_km: number;
+  fuel: string;
+  transmission: string;
+  location: string;
+  starting_price: number;
+  reserve_price: number;
+  current_price: number;
+  currency: string;
+  auction_start: number;
+  auction_end: number;
+  image_url: {
+    mime: string;
+    url: string;
+  };
+  vin: string;
+  description: string;
+  engine: string;
+  power_hp: number;
+  color: string;
+  previous_owners: number;
+  condition_report: string;
+  features: string[];
+  has_bids: boolean;
+}
+
+export interface CreateAuctionResponse {
+  success: boolean;
+  auction: MyPostedAuction;
+}
+
+export interface UpdateAuctionResponse {
+  success: boolean;
+  auction: MyPostedAuction;
+}
+
+// Auction Statistics Types
+export interface TopBidder {
+  name: string;
+  bid_amount: number;
+  bid_time: number;
+}
+
+export interface ViewsOverTime {
+  date: string;
+  views: number;
+}
+
+export interface BidsOverTime {
+  date: string;
+  bids: number;
+}
+
+export interface AuctionStats {
+  id: number;
+  title: string;
+  subtitle: string;
+  image_url: string;
+  current_price: number;
+  starting_price: number;
+  currency: string;
+  total_bids: number;
+  total_views: number;
+  unique_viewers: number;
+  watchlist_count: number;
+  is_active: boolean;
+  auction_end: number;
+  created_at: number;
+  price_increase: number;
+  price_increase_percent: number;
+  top_bidders: TopBidder[];
+  views_over_time: ViewsOverTime[];
+  bids_over_time: BidsOverTime[];
+}
+
+// User Profile Types
+export interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  country?: string;
+  avatar_url?: string;
+  created_at: number;
+  statistics: {
+    auctions_posted: number;
+    auctions_won: number;
+    total_bids: number;
+  };
+}
+
+export interface UpdateProfilePayload {
+  name?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  country?: string;
+  avatar_url?: string;
+}
+
+export interface UpdateProfileResponse {
+  success: boolean;
+  user: UserProfile;
+}
+
+export interface ChangePasswordPayload {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface DeleteAccountPayload {
+  password: string;
+  confirmation: string;
+}
+
+export interface DeleteAccountResponse {
+  success: boolean;
+  message: string;
+}

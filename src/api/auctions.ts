@@ -1,11 +1,26 @@
 import { carClient, handleAPIError } from './client';
-import type { AuctionDetail, AuctionListResponse, BidsListResponse, PlaceBidResponse, ToggleWatchlistResponse, WatchlistResponse, FinalizeAuctionResponse } from './types';
+import type {
+  AuctionDetail,
+  AuctionListResponse,
+  BidsListResponse,
+  PlaceBidResponse,
+  ToggleWatchlistResponse,
+  WatchlistResponse,
+  FinalizeAuctionResponse,
+  MyPostedAuctionsResponse,
+  DeleteAuctionResponse,
+  CreateAuctionPayload,
+  CreateAuctionResponse,
+  AuctionForEdit,
+  UpdateAuctionResponse,
+  AuctionStats
+} from './types';
 
 export const AuctionService = {
   async getAuctions(page = 1, perPage = 20): Promise<AuctionListResponse> {
     try {
       const response = await carClient.get<AuctionListResponse>('/auctions/list', {
-        params: { page, per_page: perPage }
+        params: { page, per_page: perPage },
       });
       return response.data;
     } catch (error) {
@@ -160,6 +175,71 @@ export const AuctionService = {
       const response = await carClient.get<AuctionListResponse>('/auctions/mine', {
         params: { user_id: userId, page, per_page: perPage }
       });
+      return response.data;
+    } catch (error) {
+      throw handleAPIError(error);
+    }
+  },
+
+  // My Posted Auctions endpoints
+  async getMyPostedAuctions(page = 1, perPage = 20, status: 'all' | 'active' | 'ended' = 'all'): Promise<MyPostedAuctionsResponse> {
+    try {
+      const response = await carClient.get<MyPostedAuctionsResponse>('/my-auctions/my-posted', {
+        params: { page, per_page: perPage, status }
+      });
+      return response.data;
+    } catch (error) {
+      throw handleAPIError(error);
+    }
+  },
+
+  async deleteAuction(auctionId: number): Promise<DeleteAuctionResponse> {
+    try {
+      const response = await carClient.delete<DeleteAuctionResponse>(`/my-auctions/delete?auction_id=${auctionId}`);
+      return response.data;
+    } catch (error) {
+      throw handleAPIError(error);
+    }
+  },
+
+  async createAuction(payload: CreateAuctionPayload | FormData): Promise<CreateAuctionResponse> {
+    try {
+      // const config = payload instanceof FormData
+      //   ? { headers: { 'Content-Type': 'multipart/form-data' } }
+      //   : {};
+
+      const response = await carClient.post<CreateAuctionResponse>('/my-auctions/create', payload, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    } catch (error) {
+      throw handleAPIError(error);
+    }
+  },
+
+  async getAuctionForEdit(auctionId: number): Promise<AuctionForEdit> {
+    try {
+      const response = await carClient.get<AuctionForEdit>(`/my-auctions/this-auction/edit?auction_id=${auctionId}`);
+      return response.data;
+    } catch (error) {
+      throw handleAPIError(error);
+    }
+  },
+
+  async updateAuction(auctionId: number, payload: Partial<CreateAuctionPayload> | FormData): Promise<UpdateAuctionResponse> {
+    try {
+      // const config = payload instanceof FormData
+      //   ? { headers: { 'Content-Type': 'multipart/form-data' } }
+      //   : {};
+
+      const response = await carClient.put<UpdateAuctionResponse>(`/my-auctions/this-auction?auction_id=${auctionId}`, payload, { headers: { 'Content-Type': 'multipart/form-data' } });
+      return response.data;
+    } catch (error) {
+      throw handleAPIError(error);
+    }
+  },
+
+  async getAuctionStats(auctionId: number): Promise<AuctionStats> {
+    try {
+      const response = await carClient.get<AuctionStats>(`/my-auctions/this-auction/stats?auction_id=${auctionId}`);
       return response.data;
     } catch (error) {
       throw handleAPIError(error);

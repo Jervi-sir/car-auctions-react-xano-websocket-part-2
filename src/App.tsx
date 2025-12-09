@@ -1,10 +1,22 @@
 // src/App.tsx
 import { Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { MainLayout } from "./components/layout/main-layout";
 import { AuctionListPage } from "./routes/auction-list-page";
 import { EndedAuctionsPage } from "./routes/ended-auctions-page";
 import { MyAuctionsPage } from "./routes/my-auctions-page";
+import { MyPostedAuctionsPage } from "./routes/my-posted-auctions-page";
+import { CreateEditAuctionPage } from "./routes/create-edit-auction-page";
+import { AuctionStatsPage } from "./routes/auction-stats-page";
+import { EditProfilePage } from "./routes/edit-profile-page";
 import { CarAuctionSessionPage } from "./routes/car-auction-session-page";
 import { LoginPage } from "./routes/login-page";
 import { SignupPage } from "./routes/signup-page";
@@ -24,6 +36,10 @@ function TopNav() {
     pathname === "/" || pathname === "/auctions";
   const isEndedAuctions = pathname.startsWith("/auctions/ended");
   const isMyWins = pathname.startsWith("/auctions/mine");
+  const isMyPosted = pathname.startsWith("/auctions/posted") ||
+    pathname.startsWith("/auctions/create") ||
+    pathname.includes("/edit") ||
+    pathname.includes("/stats");
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
@@ -97,15 +113,77 @@ function TopNav() {
                 <Link to="/auctions/mine">My Wins</Link>
               </Button>
 
+              {/* My Posted tab */}
+              <Button
+                asChild
+                variant={isMyPosted ? "default" : "outline"}
+                size="sm"
+                aria-current={isMyPosted ? "page" : undefined}
+              >
+                <Link to="/auctions/posted">My Posted</Link>
+              </Button>
+
               <ModeToggle />
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={logout}
-              >
-                Logout
-              </Button>
+              {/* User Dropdown Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile/edit">
+                      <svg
+                        className="mr-2 h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>
+                    <svg
+                      className="mr-2 h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
+                    </svg>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         ) : (
@@ -204,11 +282,61 @@ function AppContent() {
             }
           />
           <Route
+            path="/auctions/posted"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <MyPostedAuctionsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/auctions/create"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <CreateEditAuctionPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/auctions/:id/edit"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <CreateEditAuctionPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/auctions/:id/stats"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <AuctionStatsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/auctions/ended"
             element={
               <ProtectedRoute>
                 <MainLayout>
                   <EndedAuctionsPage />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/edit"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <EditProfilePage />
                 </MainLayout>
               </ProtectedRoute>
             }
