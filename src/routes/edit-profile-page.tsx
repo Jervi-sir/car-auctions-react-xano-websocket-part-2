@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/context/AuthContext";
 import { UserProfileService } from "@/api";
 import type { UserProfile } from "@/api";
 import axios from "axios";
@@ -19,7 +18,6 @@ interface ProfileFormData {
 }
 
 export function EditProfilePage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -177,15 +175,6 @@ export function EditProfilePage() {
     } finally {
       setDeleteLoading(false);
     }
-  };
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   if (fetchingProfile) {

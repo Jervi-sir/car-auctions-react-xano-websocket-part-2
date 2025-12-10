@@ -22,19 +22,19 @@ export function MyPostedAuctionsPage() {
   const [auctions, setAuctions] = useState<MyPostedAuction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);            // 👈 fix name
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchAuctions = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await AuctionService.getMyPostedAuctions(page, 20, 'all');
+      const response = await AuctionService.getMyPostedAuctions(page, 20, "all");
       setAuctions(response.auctions);
       setTotalPages(response.total_pages || 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch auctions');
-      console.error('Error fetching auctions:', err);
+      setError(err instanceof Error ? err.message : "Failed to fetch auctions");
+      console.error("Error fetching auctions:", err);
     } finally {
       setLoading(false);
     }
@@ -42,17 +42,26 @@ export function MyPostedAuctionsPage() {
 
   useEffect(() => {
     fetchAuctions();
-  }, [page]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]); // 👈 refetch when page changes
 
   const handleDelete = async (id: number) => {
     try {
       await AuctionService.deleteAuction(id);
       // Remove from local state
-      setAuctions(auctions.filter((auction) => auction.id !== id));
+      setAuctions((prev) => prev.filter((auction) => auction.id !== id));
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to delete auction');
-      console.error('Error deleting auction:', err);
+      alert(err instanceof Error ? err.message : "Failed to delete auction");
+      console.error("Error deleting auction:", err);
     }
+  };
+
+  const goToPrevPage = () => {
+    setPage((prev) => Math.max(1, prev - 1));
+  };
+
+  const goToNextPage = () => {
+    setPage((prev) => Math.min(totalPages, prev + 1));
   };
 
   if (loading) {
@@ -137,15 +146,47 @@ export function MyPostedAuctionsPage() {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {auctions.map((auction) => (
-            <AuctionCard
-              key={auction.id}
-              auction={auction}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4 md:grid-cols-2">
+            {auctions.map((auction) => (
+              <AuctionCard
+                key={auction.id}
+                auction={auction}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+
+          {/* 👇 Pagination controls */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === 1}
+                onClick={goToPrevPage}
+              >
+                Previous
+              </Button>
+
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>
+                  Page <span className="font-semibold">{page}</span> of{" "}
+                  <span className="font-semibold">{totalPages}</span>
+                </span>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page === totalPages}
+                onClick={goToNextPage}
+              >
+                Next
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -190,9 +231,7 @@ function AuctionCard({
           </Badge>
         </div>
         <div className="absolute bottom-3 left-3 rounded-full bg-black/70 px-3 py-1 text-xs text-white">
-          {isEnded
-            ? "Ended"
-            : `${daysRemaining}d ${hoursRemaining}h remaining`}
+          {isEnded ? "Ended" : `${daysRemaining}d ${hoursRemaining}h remaining`}
         </div>
       </div>
 

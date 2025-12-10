@@ -283,12 +283,6 @@ export function CreateEditAuctionPage() {
       if (formData.previousOwners)
         formDataToSend.append("previous_owners", formData.previousOwners);
 
-      // Decide what to do with the image
-      const isImageUrlObject =
-        formData.imageUrl &&
-        typeof formData.imageUrl === "object" &&
-        !(formData.imageUrl instanceof File);
-
       if (isEditMode && id) {
         // EDIT MODE
 
