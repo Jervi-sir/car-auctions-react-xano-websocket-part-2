@@ -310,7 +310,7 @@ export function CreateEditAuctionPage() {
         await AuctionService.createAuction(formDataToSend as any);
       }
 
-      // navigate("/auctions/posted");
+      navigate("/auctions/posted");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save auction");
       console.error("Error saving auction:", err);
