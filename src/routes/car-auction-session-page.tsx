@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { AuctionService } from "@/api/auctions";
 import { useAuth } from "@/context/AuthContext";
@@ -47,26 +47,7 @@ export function CarAuctionSessionPage() {
 
   const channelRef = useRef<any>(null);
 
-  // Fetch bids helper
-  const fetchBids = useCallback(async (auctionId: number) => {
-    try {
-      const response = await AuctionService.getAuctionBids(auctionId);
 
-      const mappedBids: LocalBid[] = response.bids.map((b) => ({
-        id: b.id,
-        bidderName: b.bidder_name || `User ${b.bidder_id}`,
-        amount: b.amount,
-        time: new Date(b.created_at).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      }));
-      setBids(mappedBids);
-    } catch (error) {
-      console.error("Failed to fetch bids", error);
-    }
-  }, []);
 
   // Fetch car details
   useEffect(() => {
@@ -123,7 +104,22 @@ export function CarAuctionSessionPage() {
         }
 
         // Initial fetch of bids
-        await fetchBids(data.id);
+        try {
+          const response = await AuctionService.getAuctionBids(data.id);
+          const mappedBids: LocalBid[] = response.bids.map((b) => ({
+            id: b.id,
+            bidderName: b.bidder_name || `User ${b.bidder_id}`,
+            amount: b.amount,
+            time: new Date(b.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            }),
+          }));
+          setBids(mappedBids);
+        } catch (error) {
+          console.error("Failed to fetch bids", error);
+        }
 
       } catch (err) {
         console.error(err);
@@ -134,7 +130,7 @@ export function CarAuctionSessionPage() {
     };
 
     loadData();
-  }, [slug, fetchBids]);
+  }, [slug]);
 
 
   // Realtime WebSocket effect

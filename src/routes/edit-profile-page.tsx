@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { UserProfileService } from "@/api";
 import type { UserProfile } from "@/api";
 import axios from "axios";
+import { USER_API_BASE } from "@/config";
 
 interface ProfileFormData {
   name: string;
@@ -151,7 +152,7 @@ export function EditProfilePage() {
     setDeleteLoading(true);
     try {
       await axios.delete(
-        "https://xqrx-tgqf-f4ju.n7e.xano.io/api:4aZ5gqlM/user/account",
+        USER_API_BASE + "/user/account",
         {
           data: {
             current_password: deletePassword,

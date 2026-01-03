@@ -1,12 +1,9 @@
+import { CAR_API_BASE } from '@/config';
 import axios from 'axios';
-
-// Base API configuration
-export const API_BASE_URL = 'https://xqrx-tgqf-f4ju.n7e.xano.io/api:FnuTavOE'; //import.meta.env.VITE_API_BASE_URL || 'https://api.example.com';
-export const API_GROUP = '';
 
 // Create axios instance with default configuration
 export const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/${API_GROUP}`,
+  baseURL: `${CAR_API_BASE}`,
   headers: {
     'Content-Type': 'application/json',
   },

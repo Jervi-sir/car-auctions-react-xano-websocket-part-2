@@ -1,8 +1,7 @@
+import { CAR_API_BASE, USER_API_BASE } from '@/config';
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 // Base URLs from documentation
-export const USER_API_BASE = 'https://xqrx-tgqf-f4ju.n7e.xano.io/api:4aZ5gqlM';
-export const CAR_API_BASE = 'https://xqrx-tgqf-f4ju.n7e.xano.io/api:FnuTavOE';
 
 export const userClient = axios.create({
   baseURL: USER_API_BASE,
